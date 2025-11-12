@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Card, CardHeader, CardBody, CardFooter, Input, Button, Divider } from '@heroui/react'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -21,14 +22,12 @@ export default function SignupPage() {
     setSuccess(false)
     setLoading(true)
 
-    // Validate passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match')
       setLoading(false)
       return
     }
 
-    // Validate password length
     if (password.length < 6) {
       setError('Password must be at least 6 characters')
       setLoading(false)
@@ -60,100 +59,103 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Or{' '}
-            <Link
-              href="/login"
-              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-            >
-              sign in to existing account
-            </Link>
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSignup}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email-address"
-                name="email"
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-4 py-12">
+      <div className="w-full max-w-md">
+        <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+          <CardHeader className="flex flex-col gap-2 px-8 pt-8 pb-0">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Create Account
+            </h1>
+            <p className="text-sm text-gray-400">
+              Sign up to get started with Mantis
+            </p>
+          </CardHeader>
+          
+          <CardBody className="px-8 py-6">
+            <form onSubmit={handleSignup} className="flex flex-col gap-4">
+              <Input
                 type="email"
-                autoComplete="email"
-                required
+                label="Email"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 dark:text-white dark:bg-gray-800 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                placeholder="Email address"
+                isRequired
+                variant="bordered"
+                classNames={{
+                  input: "text-white",
+                  inputWrapper: "border-gray-700 hover:border-gray-600",
+                }}
               />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
+              
+              <Input
                 type="password"
-                autoComplete="new-password"
-                required
+                label="Password"
+                placeholder="Create a password (min. 6 characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 dark:text-white dark:bg-gray-800 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                placeholder="Password (min. 6 characters)"
+                isRequired
+                variant="bordered"
+                classNames={{
+                  input: "text-white",
+                  inputWrapper: "border-gray-700 hover:border-gray-600",
+                }}
               />
-            </div>
-            <div>
-              <label htmlFor="confirm-password" className="sr-only">
-                Confirm Password
-              </label>
-              <input
-                id="confirm-password"
-                name="confirm-password"
+
+              <Input
                 type="password"
-                autoComplete="new-password"
-                required
+                label="Confirm Password"
+                placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 dark:text-white dark:bg-gray-800 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                placeholder="Confirm password"
+                isRequired
+                variant="bordered"
+                classNames={{
+                  input: "text-white",
+                  inputWrapper: "border-gray-700 hover:border-gray-600",
+                }}
               />
-            </div>
-          </div>
 
-          {error && (
-            <div className="rounded-md bg-red-50 dark:bg-red-900/30 p-4">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-            </div>
-          )}
+              {error && (
+                <div className="rounded-lg bg-red-500/10 border border-red-500/50 p-3">
+                  <p className="text-sm text-red-400">{error}</p>
+                </div>
+              )}
 
-          {success && (
-            <div className="rounded-md bg-green-50 dark:bg-green-900/30 p-4">
-              <p className="text-sm text-green-800 dark:text-green-200">
-                Account created successfully! Check your email to confirm your account. Redirecting to login...
-              </p>
-            </div>
-          )}
+              {success && (
+                <div className="rounded-lg bg-green-500/10 border border-green-500/50 p-3">
+                  <p className="text-sm text-green-400">
+                    Account created successfully! Check your email to confirm. Redirecting...
+                  </p>
+                </div>
+              )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Creating account...' : 'Sign up'}
-            </button>
-          </div>
-        </form>
+              <Button
+                type="submit"
+                color="secondary"
+                size="lg"
+                isLoading={loading}
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 font-semibold"
+              >
+                {loading ? 'Creating account...' : 'Sign Up'}
+              </Button>
+            </form>
+          </CardBody>
+
+          <Divider className="bg-gray-700" />
+
+          <CardFooter className="px-8 py-6">
+            <p className="text-sm text-gray-400 text-center w-full">
+              Already have an account?{' '}
+              <Link
+                href="/login"
+                className="text-purple-400 hover:text-purple-300 font-medium"
+              >
+                Sign in
+              </Link>
+            </p>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   )
 }
-

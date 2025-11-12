@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { Card, CardHeader, CardBody, Input, Button, Progress, Chip } from '@heroui/react'
 
 export default function ScreenshotPage() {
   const [url, setUrl] = useState('')
@@ -13,7 +15,6 @@ export default function ScreenshotPage() {
   const [progress, setProgress] = useState(0)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) {
@@ -28,12 +29,11 @@ export default function ScreenshotPage() {
     setScreenshot(null)
     setScreenshotUrl(null)
     setLoading(true)
-    setCountdown(30) // Estimated time in seconds
+    setCountdown(30)
     setProgress(0)
 
-    // Start countdown timer
     const startTime = Date.now()
-    const estimatedDuration = 30000 // 30 seconds
+    const estimatedDuration = 30000
 
     timerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime
@@ -94,20 +94,20 @@ export default function ScreenshotPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Navigation */}
-      <nav className="bg-white dark:bg-gray-800 shadow">
+      <nav className="bg-gray-800/50 backdrop-blur-md border-b border-gray-700">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between items-center">
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard"
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
               >
                 ← Back to Dashboard
               </Link>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                Website Screenshot Tool
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Screenshot Tool
               </h1>
             </div>
           </div>
@@ -115,265 +115,221 @@ export default function ScreenshotPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Capture Website Screenshots
+          <h2 className="text-4xl font-bold text-white mb-2">
+            Capture Website Screenshots 📸
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-400 text-lg">
             Enter any URL to take a full-page screenshot
           </p>
         </div>
 
-        {/* URL Input Form */}
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="url"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Website URL
-              </label>
+        {/* URL Input Card */}
+        <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700 mb-8">
+          <CardBody className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex gap-2">
-                <input
+                <Input
                   type="text"
-                  id="url"
+                  placeholder="https://example.com"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://example.com"
-                  required
-                  className="flex-1 rounded-md border-0 px-4 py-3 text-gray-900 dark:text-white dark:bg-gray-700 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                  isRequired
+                  variant="bordered"
+                  size="lg"
+                  classNames={{
+                    input: "text-white text-lg",
+                    inputWrapper: "border-gray-700 hover:border-gray-600 h-14",
+                  }}
                 />
-                <button
+                <Button
                   type="submit"
-                  disabled={loading || !url}
-                  className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  color="primary"
+                  size="lg"
+                  isLoading={loading}
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 font-semibold px-8"
                 >
-                  {loading ? (
-                    <span className="flex items-center gap-2">
-                      <svg
-                        className="animate-spin h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      {countdown > 0 ? `${countdown}s remaining...` : 'Taking Screenshot...'}
-                    </span>
-                  ) : (
-                    'Take Screenshot'
-                  )}
-                </button>
+                  {loading ? `${countdown}s remaining...` : 'Capture'}
+                </Button>
               </div>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                Include http:// or https:// in the URL. Note: Screenshots typically take 10-30 seconds.
+              <p className="text-sm text-gray-500">
+                Include http:// or https:// • Popups & cookie banners automatically removed • 10-30 seconds
               </p>
-            </div>
-          </form>
+            </form>
 
-          {/* Progress Bar */}
-          {loading && (
-            <div className="mt-4 space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Processing... {Math.round(progress)}%
-                </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  ~{countdown}s remaining
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-                <div
-                  className="bg-blue-600 h-3 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${progress}%` }}
-                >
-                  <div className="w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+            {/* Progress Bar */}
+            {loading && (
+              <div className="mt-6 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-white">
+                    Processing... {Math.round(progress)}%
+                  </span>
+                  <Chip color="primary" variant="flat" size="sm">
+                    ~{countdown}s remaining
+                  </Chip>
+                </div>
+                <Progress
+                  value={progress}
+                  color="primary"
+                  className="w-full"
+                  classNames={{
+                    indicator: "bg-gradient-to-r from-blue-500 to-purple-500",
+                  }}
+                />
+                <div className="space-y-1.5 text-xs text-gray-400">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span>Loading page content...</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span>Removing popups & cookie banners...</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span>Triggering lazy-loaded images...</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span>Waiting for all resources...</span>
+                  </div>
+                  <div className={`flex items-center gap-2 ${progress > 80 ? 'text-blue-400 font-medium' : ''}`}>
+                    {progress > 80 ? (
+                      <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      <svg className="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                        <circle cx="10" cy="10" r="3" />
+                      </svg>
+                    )}
+                    <span>Capturing screenshot...</span>
+                  </div>
                 </div>
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                <p>✓ Loading page content...</p>
-                <p>✓ Triggering lazy-loaded images...</p>
-                <p>✓ Waiting for all resources...</p>
-                <p className={progress > 80 ? 'text-blue-600 dark:text-blue-400 font-medium' : ''}>
-                  {progress > 80 ? '✓ Capturing screenshot...' : '○ Capturing screenshot...'}
-                </p>
-              </div>
-            </div>
-          )}
+            )}
 
-          {/* Error Display */}
-          {error && (
-            <div className="mt-4 rounded-md bg-red-50 dark:bg-red-900/30 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
+            {/* Error Display */}
+            {error && (
+              <div className="mt-4 rounded-lg bg-red-500/10 border border-red-500/50 p-4">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
-                    Error
-                  </h3>
-                  <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                    {error}
-                  </p>
+                  <div>
+                    <h3 className="text-sm font-medium text-red-400">Error</h3>
+                    <p className="text-sm text-red-300 mt-1">{error}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </CardBody>
+        </Card>
 
         {/* Screenshot Display */}
         {screenshot && (
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Screenshot Result
-                </h3>
-                {screenshotUrl && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    {screenshotUrl}
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={handleDownload}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                <svg
-                  className="h-5 w-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+          <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+            <CardHeader className="px-6 pt-6">
+              <div className="flex justify-between items-center w-full">
+                <div>
+                  <h3 className="text-lg font-semibold text-white">
+                    Screenshot Result ✓
+                  </h3>
+                  {screenshotUrl && (
+                    <p className="text-sm text-gray-400 mt-1">
+                      {screenshotUrl}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  color="success"
+                  variant="flat"
+                  onPress={handleDownload}
+                  startContent={
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                  }
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
-                Download
-              </button>
-            </div>
-
-            <div className="border-2 border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-              <img
-                src={screenshot}
-                alt="Website Screenshot"
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
+                  Download
+                </Button>
+              </div>
+            </CardHeader>
+            <CardBody className="px-6 pb-6">
+              <div className="border-2 border-gray-700 rounded-lg overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={screenshot}
+                  alt="Website Screenshot"
+                  className="w-full h-auto"
+                />
+              </div>
+            </CardBody>
+          </Card>
         )}
 
         {/* Info Cards */}
         {!screenshot && !loading && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
-              <div className="flex items-center mb-3">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-8 w-8 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
+            <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+              <CardBody className="p-6">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h3 className="ml-3 text-lg font-semibold text-gray-900 dark:text-white">
-                  Full Page Capture
-                </h3>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Captures the entire webpage including lazy-loaded content
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Full Page Capture
+              </h3>
+              <p className="text-sm text-gray-400">
+                Captures the entire webpage with popups & cookie banners automatically removed
               </p>
-            </div>
+              </CardBody>
+            </Card>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
-              <div className="flex items-center mb-3">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-8 w-8 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
+            <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+              <CardBody className="p-6">
+                <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="ml-3 text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-white mb-2">
                   High Quality
                 </h3>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Screenshots are taken at 1920x1080 resolution
-              </p>
-            </div>
+                <p className="text-sm text-gray-400">
+                  Screenshots are taken at 1920x1080 resolution
+                </p>
+              </CardBody>
+            </Card>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
-              <div className="flex items-center mb-3">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-8 w-8 text-purple-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
+            <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+              <CardBody className="p-6">
+                <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
                 </div>
-                <h3 className="ml-3 text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-white mb-2">
                   Download
                 </h3>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Save screenshots as PNG files to your device
-              </p>
-            </div>
+                <p className="text-sm text-gray-400">
+                  Save screenshots as PNG files to your device
+                </p>
+              </CardBody>
+            </Card>
           </div>
         )}
       </main>
     </div>
   )
 }
-

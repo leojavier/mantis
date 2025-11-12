@@ -9,7 +9,7 @@ A modern Next.js application built with TypeScript, Tailwind CSS, and Supabase A
 - 🎨 **Tailwind CSS** - Utility-first CSS framework
 - 🔐 **Supabase Auth** - Secure authentication with email/password
 - 🛡️ **Protected Routes** - Middleware-based route protection
-- 📸 **Screenshot Tool** - Capture full-page website screenshots with Puppeteer
+- 📸 **Screenshot Tool** - Capture full-page website screenshots with automatic popup & cookie banner removal
 - 📏 **ESLint** - Code linting for consistent code style
 - 🌙 **Dark Mode** - Automatic dark mode support
 
@@ -91,7 +91,7 @@ mantis/
 - **Login (`/login`)** - Email/password login with error handling
 - **Sign Up (`/signup`)** - User registration with email confirmation
 - **Dashboard (`/dashboard`)** - Protected page showing user information
-- **Screenshot Tool (`/dashboard/screenshot`)** - Capture full-page website screenshots
+- **Screenshot Tool (`/dashboard/screenshot`)** - Capture clean screenshots with automatic popup removal
 - **Auth Callback (`/auth/callback`)** - Handles OAuth and email confirmation callbacks
 
 ### Protected Routes
