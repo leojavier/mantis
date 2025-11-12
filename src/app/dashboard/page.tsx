@@ -55,53 +55,103 @@ export default async function DashboardPage() {
           <h3 className="text-xl font-semibold text-white mb-4">
             Quick Actions
           </h3>
-          <Link href="/dashboard/screenshot">
-            <Card 
-              isPressable
-              className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300 hover:scale-[1.02]"
-            >
-              <CardBody className="p-6">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <svg
-                      className="h-6 w-6 text-blue-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Link href="/dashboard/screenshot">
+              <Card 
+                isPressable
+                className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300 hover:scale-[1.02]"
+              >
+                <CardBody className="p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="h-6 w-6 text-blue-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="ml-5">
+                      <h4 className="text-xl font-bold text-white">Screenshot Tool</h4>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Capture full-page website screenshots
+                      </p>
+                    </div>
+                    <div className="ml-auto">
+                      <svg
+                        className="h-6 w-6 text-blue-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
                   </div>
-                  <div className="ml-5">
-                    <h4 className="text-xl font-bold text-white">Screenshot Tool</h4>
-                    <p className="text-sm text-gray-400 mt-1">
-                      Capture full-page website screenshots
-                    </p>
+                </CardBody>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard/history">
+              <Card 
+                isPressable
+                className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 hover:scale-[1.02]"
+              >
+                <CardBody className="p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="h-6 w-6 text-purple-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="ml-5">
+                      <h4 className="text-xl font-bold text-white">Screenshot History</h4>
+                      <p className="text-sm text-gray-400 mt-1">
+                        View and manage saved screenshots
+                      </p>
+                    </div>
+                    <div className="ml-auto">
+                      <svg
+                        className="h-6 w-6 text-purple-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
                   </div>
-                  <div className="ml-auto">
-                    <svg
-                      className="h-6 w-6 text-blue-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </Link>
+                </CardBody>
+              </Card>
+            </Link>
+          </div>
         </div>
 
         {/* User Stats */}
