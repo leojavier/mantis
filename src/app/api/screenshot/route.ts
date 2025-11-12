@@ -82,6 +82,136 @@ export async function POST(request: NextRequest) {
     // Give the page a moment to render
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
+    console.log('Removing popups and cookie banners...')
+
+    // Remove cookie banners, popups, and overlays
+    try {
+      await page.evaluate(() => {
+        // Common cookie banner and popup selectors
+        const selectorsToRemove = [
+          // Cookie consent banners
+          '[class*="cookie"]',
+          '[id*="cookie"]',
+          '[class*="consent"]',
+          '[id*="consent"]',
+          '[class*="gdpr"]',
+          '[id*="gdpr"]',
+          '[class*="privacy-banner"]',
+          '[id*="privacy-banner"]',
+          // Common modal/popup classes
+          '[class*="modal"]',
+          '[class*="popup"]',
+          '[class*="overlay"]',
+          '[class*="banner"]',
+          '[role="dialog"]',
+          '[aria-modal="true"]',
+          // Specific popular cookie consent tools
+          '#onetrust-consent-sdk',
+          '.onetrust-pc-dark-filter',
+          '#truste-consent-track',
+          '.trustarc-banner-container',
+          '#cookieChoiceInfo',
+          '.cc-window',
+          '.cookie-notice',
+          '.cookie-banner',
+          '.cookies-banner',
+          // Newsletter popups
+          '[class*="newsletter"]',
+          '[class*="subscribe"]',
+        ]
+
+        // Try to click accept/close buttons first
+        const buttonSelectors = [
+          'button[class*="accept"]',
+          'button[class*="agree"]',
+          'button[class*="consent"]',
+          'button[id*="accept"]',
+          'button[id*="agree"]',
+          'a[class*="accept"]',
+          'a[class*="agree"]',
+          '[class*="cookie"] button',
+          '[class*="consent"] button',
+          'button:has-text("Accept")',
+          'button:has-text("I agree")',
+          'button:has-text("Accept all")',
+          'button:has-text("Got it")',
+          'button:has-text("OK")',
+        ]
+
+        // Try to click accept buttons
+        buttonSelectors.forEach((selector) => {
+          try {
+            const buttons = document.querySelectorAll(selector)
+            buttons.forEach((button) => {
+              if (button instanceof HTMLElement) {
+                button.click()
+              }
+            })
+          } catch (e) {
+            // Ignore errors for individual selectors
+          }
+        })
+
+        // Wait a bit for animations
+        setTimeout(() => {
+          // Remove elements by display
+          selectorsToRemove.forEach((selector) => {
+            try {
+              const elements = document.querySelectorAll(selector)
+              elements.forEach((element) => {
+                if (element instanceof HTMLElement) {
+                  element.remove()
+                }
+              })
+            } catch (e) {
+              // Ignore errors for individual selectors
+            }
+          })
+
+          // Remove fixed/sticky positioned elements that might be overlays
+          const allElements = document.querySelectorAll('*')
+          allElements.forEach((element) => {
+            if (element instanceof HTMLElement) {
+              const style = window.getComputedStyle(element)
+              const position = style.position
+              const zIndex = parseInt(style.zIndex || '0')
+
+              // Remove high z-index fixed/sticky elements (likely popups)
+              if ((position === 'fixed' || position === 'sticky') && zIndex > 999) {
+                // Check if it's likely a popup/modal
+                const classes = element.className.toLowerCase()
+                const id = element.id.toLowerCase()
+                if (
+                  classes.includes('modal') ||
+                  classes.includes('popup') ||
+                  classes.includes('overlay') ||
+                  classes.includes('cookie') ||
+                  classes.includes('consent') ||
+                  classes.includes('banner') ||
+                  id.includes('modal') ||
+                  id.includes('popup') ||
+                  id.includes('overlay') ||
+                  id.includes('cookie') ||
+                  id.includes('consent')
+                ) {
+                  element.remove()
+                }
+              }
+            }
+          })
+
+          // Remove body overflow hidden (often set by modals)
+          document.body.style.overflow = ''
+          document.documentElement.style.overflow = ''
+        }, 500)
+      })
+
+      // Wait for removal to complete
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+    } catch (removeError) {
+      console.warn('Error removing popups, continuing anyway:', removeError)
+    }
+
     console.log('Scrolling to trigger lazy content...')
 
     // Scroll to bottom to trigger lazy loading
@@ -147,7 +277,7 @@ export async function POST(request: NextRequest) {
     console.log('Screenshot completed successfully')
 
     // Convert buffer to base64
-    const base64Image = screenshot.toString('base64')
+    const base64Image = Buffer.from(screenshot).toString('base64')
 
     return NextResponse.json({
       success: true,
