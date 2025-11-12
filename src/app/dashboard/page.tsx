@@ -55,7 +55,7 @@ export default async function DashboardPage() {
           <h3 className="text-xl font-semibold text-white mb-4">
             Quick Actions
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Link href="/dashboard/screenshot">
               <Card 
                 isPressable
@@ -81,7 +81,7 @@ export default async function DashboardPage() {
                     <div className="ml-5">
                       <h4 className="text-xl font-bold text-white">Screenshot Tool</h4>
                       <p className="text-sm text-gray-400 mt-1">
-                        Capture full-page website screenshots
+                        Capture full-page screenshots
                       </p>
                     </div>
                     <div className="ml-auto">
@@ -104,7 +104,7 @@ export default async function DashboardPage() {
               </Card>
             </Link>
 
-            <Link href="/dashboard/history">
+            <Link href="/dashboard/gallery">
               <Card 
                 isPressable
                 className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 hover:scale-[1.02]"
@@ -122,6 +122,54 @@ export default async function DashboardPage() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="ml-5">
+                      <h4 className="text-xl font-bold text-white">Gallery Calendar</h4>
+                      <p className="text-sm text-gray-400 mt-1">
+                        View screenshots by date
+                      </p>
+                    </div>
+                    <div className="ml-auto">
+                      <svg
+                        className="h-6 w-6 text-purple-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard/history">
+              <Card 
+                isPressable
+                className="bg-gradient-to-br from-green-500/20 to-teal-500/20 border border-green-500/30 hover:border-green-400/50 transition-all duration-300 hover:scale-[1.02]"
+              >
+                <CardBody className="p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="h-6 w-6 text-green-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
                           d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
                         />
                       </svg>
@@ -129,12 +177,12 @@ export default async function DashboardPage() {
                     <div className="ml-5">
                       <h4 className="text-xl font-bold text-white">Screenshot History</h4>
                       <p className="text-sm text-gray-400 mt-1">
-                        View and manage saved screenshots
+                        View and manage all screenshots
                       </p>
                     </div>
                     <div className="ml-auto">
                       <svg
-                        className="h-6 w-6 text-purple-400"
+                        className="h-6 w-6 text-green-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
