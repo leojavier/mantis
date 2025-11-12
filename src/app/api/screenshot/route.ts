@@ -263,6 +263,70 @@ export async function POST(request: NextRequest) {
     // Final wait to ensure everything settles
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
+    console.log('Preparing page for screenshot...')
+
+    // Scroll to the very top of the page to ensure headers/banners are visible
+    await page.evaluate(() => {
+      window.scrollTo(0, 0)
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+    })
+
+    // Wait for any lazy-loaded header content to appear
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    // Trigger any intersection observers for lazy-loaded content at the top
+    await page.evaluate(() => {
+      // Force all lazy-loaded images in the viewport to load
+      const lazyImages = document.querySelectorAll('img[loading="lazy"]')
+      lazyImages.forEach((img) => {
+        if (img instanceof HTMLImageElement) {
+          img.loading = 'eager'
+          // Force browser to start loading the image
+          if (img.dataset.src) {
+            img.src = img.dataset.src
+          }
+        }
+      })
+
+      // Trigger lazy-load libraries (like lazysizes)
+      const lazyElements = document.querySelectorAll('.lazyload, [data-src]')
+      lazyElements.forEach((el) => {
+        if (el instanceof HTMLElement) {
+          el.classList.add('lazyloaded')
+          const dataSrc = el.getAttribute('data-src')
+          if (dataSrc) {
+            if (el instanceof HTMLImageElement) {
+              el.src = dataSrc
+            } else {
+              el.style.backgroundImage = `url(${dataSrc})`
+            }
+          }
+        }
+      })
+    })
+
+    // Wait for header images to load
+    await page.evaluate(() => {
+      return Promise.race([
+        Promise.all(
+          Array.from(document.querySelectorAll('header img, nav img, [role="banner"] img'))
+            .filter((img) => img instanceof HTMLImageElement && !img.complete)
+            .map((img) =>
+              new Promise((resolve) => {
+                img.addEventListener('load', resolve)
+                img.addEventListener('error', resolve)
+                setTimeout(resolve, 2000)
+              })
+            )
+        ),
+        new Promise((resolve) => setTimeout(resolve, 2000))
+      ])
+    })
+
+    // Additional small wait for any animations or transitions
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
     console.log('Taking screenshot...')
 
     // Take full page screenshot
@@ -271,18 +335,90 @@ export async function POST(request: NextRequest) {
       type: 'png',
     })
 
+    console.log('Extracting page content...')
+
+    // Extract text content from the page
+    const pageContent = await page.evaluate(() => {
+      // Get the page title
+      const title = document.title
+
+      // Get meta description
+      const metaDescription = document.querySelector('meta[name="description"]')?.getAttribute('content') || ''
+
+      // Extract all text content
+      const bodyText = document.body.innerText
+
+      // Extract all links
+      const links = Array.from(document.querySelectorAll('a[href]')).map((a) => ({
+        text: a.textContent?.trim() || '',
+        href: (a as HTMLAnchorElement).href,
+      })).filter(link => link.text && link.href)
+
+      // Extract headings
+      const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).map((h) => ({
+        level: h.tagName.toLowerCase(),
+        text: h.textContent?.trim() || '',
+      })).filter(h => h.text)
+
+      // Get word count
+      const wordCount = bodyText.trim().split(/\s+/).length
+
+      // Get character count
+      const charCount = bodyText.length
+
+      return {
+        title,
+        metaDescription,
+        bodyText: bodyText.trim(),
+        links: links.slice(0, 50), // Limit to first 50 links
+        headings: headings.slice(0, 20), // Limit to first 20 headings
+        wordCount,
+        charCount,
+      }
+    })
+
     await browser.close()
     browser = null
 
-    console.log('Screenshot completed successfully')
+    console.log('Screenshot and content extraction completed successfully')
 
     // Convert buffer to base64
     const base64Image = Buffer.from(screenshot).toString('base64')
+    const imageDataUrl = `data:image/png;base64,${base64Image}`
+
+    // Save to Supabase database
+    console.log('Saving screenshot to database...')
+    const { data: savedScreenshot, error: dbError } = await supabase
+      .from('screenshots')
+      .insert({
+        user_id: user.id,
+        url: targetUrl.toString(),
+        screenshot_data: imageDataUrl,
+        page_title: pageContent.title,
+        meta_description: pageContent.metaDescription,
+        body_text: pageContent.bodyText,
+        headings: pageContent.headings,
+        links: pageContent.links,
+        word_count: pageContent.wordCount,
+        char_count: pageContent.charCount,
+      })
+      .select()
+      .single()
+
+    if (dbError) {
+      console.error('Database error:', dbError)
+      // Don't fail the request if database save fails, just log it
+      console.warn('Failed to save to database, but returning screenshot anyway')
+    } else {
+      console.log('Screenshot saved to database with ID:', savedScreenshot.id)
+    }
 
     return NextResponse.json({
       success: true,
-      image: `data:image/png;base64,${base64Image}`,
+      image: imageDataUrl,
       url: targetUrl.toString(),
+      content: pageContent,
+      savedId: savedScreenshot?.id,
     })
   } catch (error: any) {
     console.error('Screenshot error:', error)

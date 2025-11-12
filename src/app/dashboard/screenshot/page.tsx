@@ -11,6 +11,7 @@ export default function ScreenshotPage() {
   const [error, setError] = useState<string | null>(null)
   const [screenshot, setScreenshot] = useState<string | null>(null)
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null)
+  const [pageContent, setPageContent] = useState<any>(null)
   const [countdown, setCountdown] = useState(0)
   const [progress, setProgress] = useState(0)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -28,6 +29,7 @@ export default function ScreenshotPage() {
     setError(null)
     setScreenshot(null)
     setScreenshotUrl(null)
+    setPageContent(null)
     setLoading(true)
     setCountdown(30)
     setProgress(0)
@@ -67,6 +69,7 @@ export default function ScreenshotPage() {
 
       setScreenshot(data.image)
       setScreenshotUrl(data.url)
+      setPageContent(data.content)
       setProgress(100)
     } catch (err: any) {
       console.error('Screenshot error:', err)
@@ -275,6 +278,157 @@ export default function ScreenshotPage() {
               </div>
             </CardBody>
           </Card>
+        )}
+
+        {/* Extracted Content */}
+        {pageContent && (
+          <div className="mt-8 space-y-6">
+            {/* Content Stats */}
+            <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+              <CardHeader className="px-6 pt-6">
+                <h3 className="text-lg font-semibold text-white">
+                  📊 Content Statistics
+                </h3>
+              </CardHeader>
+              <CardBody className="px-6 pb-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-gray-900/50 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Words</p>
+                    <p className="text-2xl font-bold text-white">{pageContent.wordCount.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-gray-900/50 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Characters</p>
+                    <p className="text-2xl font-bold text-white">{pageContent.charCount.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-gray-900/50 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Headings</p>
+                    <p className="text-2xl font-bold text-white">{pageContent.headings.length}</p>
+                  </div>
+                  <div className="bg-gray-900/50 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Links</p>
+                    <p className="text-2xl font-bold text-white">{pageContent.links.length}</p>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Page Info */}
+            <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+              <CardHeader className="px-6 pt-6">
+                <h3 className="text-lg font-semibold text-white">
+                  📄 Page Information
+                </h3>
+              </CardHeader>
+              <CardBody className="px-6 pb-6 space-y-4">
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Title</p>
+                  <p className="text-white font-medium">{pageContent.title || 'No title'}</p>
+                </div>
+                {pageContent.metaDescription && (
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Description</p>
+                    <p className="text-gray-300">{pageContent.metaDescription}</p>
+                  </div>
+                )}
+              </CardBody>
+            </Card>
+
+            {/* Headings */}
+            {pageContent.headings.length > 0 && (
+              <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+                <CardHeader className="px-6 pt-6">
+                  <h3 className="text-lg font-semibold text-white">
+                    🔤 Headings Structure
+                  </h3>
+                </CardHeader>
+                <CardBody className="px-6 pb-6">
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {pageContent.headings.map((heading: any, index: number) => (
+                      <div key={index} className={`flex items-start gap-2 ${
+                        heading.level === 'h1' ? 'pl-0' :
+                        heading.level === 'h2' ? 'pl-4' :
+                        heading.level === 'h3' ? 'pl-8' :
+                        heading.level === 'h4' ? 'pl-12' :
+                        heading.level === 'h5' ? 'pl-16' : 'pl-20'
+                      }`}>
+                        <Chip 
+                          size="sm" 
+                          variant="flat"
+                          color={
+                            heading.level === 'h1' ? 'primary' :
+                            heading.level === 'h2' ? 'secondary' :
+                            'default'
+                          }
+                        >
+                          {heading.level.toUpperCase()}
+                        </Chip>
+                        <p className="text-gray-300 flex-1">{heading.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+
+            {/* Text Content */}
+            <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+              <CardHeader className="px-6 pt-6 flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-white">
+                  📝 Extracted Text Content
+                </h3>
+                <Button
+                  size="sm"
+                  variant="flat"
+                  color="primary"
+                  onPress={() => {
+                    navigator.clipboard.writeText(pageContent.bodyText)
+                  }}
+                >
+                  Copy Text
+                </Button>
+              </CardHeader>
+              <CardBody className="px-6 pb-6">
+                <div className="bg-gray-900/50 rounded-lg p-4 max-h-96 overflow-y-auto">
+                  <pre className="text-sm text-gray-300 whitespace-pre-wrap font-sans">
+                    {pageContent.bodyText}
+                  </pre>
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Links */}
+            {pageContent.links.length > 0 && (
+              <Card className="bg-gray-800/50 backdrop-blur-md border border-gray-700">
+                <CardHeader className="px-6 pt-6">
+                  <h3 className="text-lg font-semibold text-white">
+                    🔗 Links Found ({pageContent.links.length})
+                  </h3>
+                </CardHeader>
+                <CardBody className="px-6 pb-6">
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {pageContent.links.map((link: any, index: number) => (
+                      <div key={index} className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-900/50 transition-colors">
+                        <svg className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-gray-300 font-medium">{link.text}</p>
+                          <a 
+                            href={link.href} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-400 hover:text-blue-300 break-all"
+                          >
+                            {link.href}
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+          </div>
         )}
 
         {/* Info Cards */}
